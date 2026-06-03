@@ -5,14 +5,13 @@ customized and the final figure is saved.
 """
 import os
 import numpy as np
-import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import mannwhitneyu
 import pypalettes
 
-from preprocessing import apply_filter
+from preprocessing import Preprocessor
 
 # non-italic matplotlib greek characters
 matplotlib.rcParams['mathtext.default'] = 'regular'
@@ -153,45 +152,30 @@ if __name__ == '__main__':
 
     # --- read data ---
     EXAMPLE_DATA_PATH = r'.\chickweight.csv'
-    example_data_df = pd.read_csv(EXAMPLE_DATA_PATH)
-    # specify preprocessing and plotting variables
-    example_subject_variable = example_data_df.columns[2]
-    example_dependent_variable = example_data_df.columns[0]
-    example_condition_variable = example_data_df.columns[3]
-    example_group_variable = example_data_df.columns[1]
+    example_data = Preprocessor(EXAMPLE_DATA_PATH)
     # apply filters
-    condition_filter_value = [0]
-    group_filter_range_values = [6, 10]
-    example_data_df = apply_filter(example_data_df,
-                                   example_condition_variable,
-                                   condition_filter_value)
-    example_data_df = apply_filter(example_data_df,
-                                   example_group_variable,
-                                   group_filter_range_values)
-    # remove non-duplicated subjects
-    example_data_df = \
-        example_data_df[example_data_df.duplicated(subset=[example_subject_variable], keep=False)]
-    # sort by group and subject variables
-    example_data_df = \
-        example_data_df.sort_values(by=[example_group_variable, example_subject_variable])
+    example_data.apply_multiple_filters([0], [6, 10])
+    # keep only duplicated subjects
+    example_data.only_duplicates()
     # specify number of subjects per group
-    example_data_df = example_data_df.groupby(example_group_variable).head(10)
-
+    example_data.data_df = \
+        example_data.data_df.groupby(example_data.prep_variables["group"]).head(10)
     # specify data-related plotting parameters
-    example_group_variable_order = \
-        sorted(list(set(example_data_df[example_group_variable].tolist())))
-    example_x_tick_labels = [str(s) + " days" for s in example_group_variable_order]
+    example_data.assign_group_variable_order()
+
+    # specify data-related plotting parameters (optional)
+    example_x_tick_labels = example_data.get_x_tick_labels()
     # palette setup
     cmap = pypalettes.load_cmap("Chlorurus_microrhinos",
-                                keep_first_n=len(example_group_variable_order))
+                                keep_first_n=len(example_data.group_variable_order))
     pypalettes_list = cmap.colors # return colors as a list of hexadecimal values
 
     # --- plot data ---
-    generate_plot(example_data_df,
-                  example_subject_variable,
-                  example_group_variable,
-                  example_dependent_variable,
-                  example_group_variable_order,
+    generate_plot(example_data.data_df,
+                  example_data.prep_variables["subject"],
+                  example_data.prep_variables["group"],
+                  example_data.prep_variables["dependent"],
+                  example_data.group_variable_order,
                   statistical_testing=True,
                   group_variable_label='Age',
                   dependent_variable_label='Weight [g]',
