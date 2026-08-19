@@ -1,5 +1,5 @@
 # Paired Plot
-Script to generate a paired plot. The chick weight dataset (Crowder & Hand, 1990) including weight units ([Roberts, 1964](https://doi.org/10.3382/ps.0430238); [Knížetová et al, 1991](https://doi.org/10.1080/00071669108417427)) are used for demonstration.
+Script to generate a paired plot. The chick weight dataset (Crowder & Hand, 1990) including weight units ([Roberts, 1964](https://doi.org/10.3382/ps.0430238); [Knížetová et al, 1991](https://doi.org/10.1080/00071669108417427)) is used for demonstration.
 
 installation:
 
