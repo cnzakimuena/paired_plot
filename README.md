@@ -17,7 +17,7 @@ pip install -r requirements.txt
 Usage:
 
 ```bash
-python paired_plot.py
+python plot_paired.py
 ```
 
 <p align="center">
